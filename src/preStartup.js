@@ -6,6 +6,6 @@ import { extendProductSchemas } from "./simpleSchemas.js";
  * @param {Object} context.simpleSchemas Simple schemas
  * @returns {undefined}
  */
-export default async function testPreStartup(context) {
+export default async function preStartup(context) {
     extendProductSchemas(context.simpleSchemas);
 }

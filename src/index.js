@@ -13,7 +13,7 @@ import preStartup from "./preStartup.js";
 export default async function register(app) {
   await app.registerPlugin({
     label: "Invoice Generator",
-    name: "ustom-invoice",
+    name: "Custom-invoice",
     version: pkg.version,
     collections: {
       Invoices: {
