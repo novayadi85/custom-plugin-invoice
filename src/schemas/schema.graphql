@@ -1,0 +1,141 @@
+
+
+
+enum InvoiceStatus {
+  canceled
+  paid 
+  unpaid
+}
+
+type InvoiceNote {
+  account: ID
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"A Invoice data"
+type Invoice {
+  "Invoice code ID"
+  _id: ID!
+
+  "Label to describe the invoice"
+  label: String
+
+  "Description to describe the discount code"
+  description: String
+
+  "The shop to which this DiscountCode belongs to"
+  shop: Shop!
+
+  notes: [InvoiceNote]!
+
+  payments: [Payment]
+
+  discount_amount: Int
+
+  total_amount: Int 
+
+  qty: Int 
+
+  tax_amount: Int 
+
+  createdAt: DateTime! 
+
+  updatedAt: DateTime!
+  
+  status: String!
+
+  incrementId: String!
+
+  orderId: ID!
+
+  order: [OrderItem]!
+
+}
+
+input InvoiceInput {
+  clientMutationId: String
+  orderId: ID!
+  itemIds: [ID]!
+  status: InvoiceStatus
+  shopId: ID!
+}
+
+"Response for the `generateInvoice` mutation"
+type InvoicePayload {
+    "The same string you sent with the mutation params, for matching mutation calls with their responses"
+    clientMutationId: String
+
+    "The Invoice data"
+    invoice: Invoice
+
+    token: String
+}
+
+"Input type for filters to be applied to an invoices list"
+input InvoiceFilterInput {
+  "Keywords typed by the user in the search input field"
+  searchField: String
+}
+
+type InvoiceConnection {
+  "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
+  edges: [InvoiceEdge]
+
+  """
+  You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
+  if you know you will not need to paginate the results.
+  """
+  nodes: [Invoice]
+
+  "Information to help a client request the next or previous page"
+  pageInfo: PageInfo!
+
+  "The total number of nodes that match your query"
+  totalCount: Int!
+}
+
+"A connection edge in which each node is a `Invoice` object"
+type InvoiceEdge {
+  "The cursor that represents this node in the paginated results"
+  cursor: ConnectionCursor!
+
+  "The Invoice"
+  node: Invoice
+}
+
+extend type Mutation {
+    createInvoice(
+        "Mutation input"
+        input: InvoiceInput
+    ): InvoicePayload!
+
+}
+
+extend type Query {
+
+  "Gets invoices codes"
+  invoices(
+    "Provide a shop ID from which you want to get discount codes"
+    shopId: ID!
+
+    "Filters to apply to a invoice query"
+    filters: InvoiceFilterInput 
+
+    "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
+    after: ConnectionCursor,
+
+    "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
+    before: ConnectionCursor,
+
+    "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
+    first: ConnectionLimitInt,
+
+    "Return at most this many results. This parameter may be used with the `before` parameter."
+    last: ConnectionLimitInt,
+
+    "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
+    offset: Int,
+  ): InvoiceConnection
+}
